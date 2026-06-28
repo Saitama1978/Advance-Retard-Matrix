@@ -15,7 +15,7 @@ class ShipWatchApp extends StatelessWidget {
       theme: ThemeData(
         brightness: Brightness.dark,
         primaryColor: Colors.blueAccent,
-        scaffoldBackgroundColor: const Color(0细121212),
+        scaffoldBackgroundColor: const Color(0xFF121212),
       ),
       home: const WatchCalculatorScreen(),
     );
@@ -30,10 +30,9 @@ class WatchCalculatorScreen extends StatefulWidget {
 }
 
 class _WatchCalculatorScreenState extends State<WatchCalculatorScreen> {
-  // States
   String _selectedWatch = '0000 - 0400';
-  bool _isAdvance = true; // true = Advance, false = Retard
-  bool _isSplit = true;   // true = 20-min Split, false = Straight 1-Hour
+  bool _isAdvance = true; 
+  bool _isSplit = true;   
 
   final List<String> _watches = [
     '0000 - 0400',
@@ -44,13 +43,11 @@ class _WatchCalculatorScreenState extends State<WatchCalculatorScreen> {
     '2000 - 2400',
   ];
 
-  // Logic to calculate details
   Map<String, String> _calculateSchedule() {
     String totalDuty = '4 Hours (Normal)';
     String bridgeTime = '';
     String adjustmentNote = 'Walang pagbabago sa shift na ito.';
 
-    // Base bridge time (15 mins early rule)
     if (_selectedWatch == '0000 - 0400') bridgeTime = '23:45';
     if (_selectedWatch == '0400 - 0800') bridgeTime = '03:45';
     if (_selectedWatch == '0800 - 1200') bridgeTime = '07:45';
@@ -60,7 +57,6 @@ class _WatchCalculatorScreenState extends State<WatchCalculatorScreen> {
 
     if (_isAdvance) {
       if (_isSplit) {
-        // 3-Way Split Advance (20 mins each for 8-12, 12-4, 4-8)
         totalDuty = '3 Hours & 40 Minutes (Bawas 20m)';
         
         if (_selectedWatch == '2000 - 2400') {
@@ -74,29 +70,27 @@ class _WatchCalculatorScreenState extends State<WatchCalculatorScreen> {
           adjustmentNote = 'Pagpatak ng 06:00, i-advance ang relo sa 06:20.';
         } else {
           totalDuty = '4 Hours (Normal)';
-          adjustmentNote = 'Walang bawas sa shift na ito. Day-workers/ibang watch ang apektado.';
+          adjustmentNote = 'Walang bawas sa shift na ito. Ibang watch o day-workers ang apektado.';
         }
       } else {
-        // Straight 1-Hour Advance (Karaniwang sa 12-4 night watch ginagawa)
         if (_selectedWatch == '0000 - 0400') {
           totalDuty = '3 Hours (Patay-Oras / Bawas 1hr)';
           bridgeTime = '23:45 (Normal akyat)';
           adjustmentNote = 'Pagpatak ng 01:00, i-talon agad sa 02:00.';
         } else if (_selectedWatch == '0400 - 0800') {
           bridgeTime = '03:45 (Bagong Oras - Puyat!)';
-          adjustmentNote = 'Direktang akyat sa bagong takbo ng oras.';
+          adjustmentNote = 'Direktang akyat sa bagong takbo ng oras dahil kulang ang tulog.';
         }
       }
     } else {
-      // Retard Logic
       if (_selectedWatch == '1200 - 1600' && !_isSplit) {
         totalDuty = '5 Hours (Buhay-Oras / Dagdag 1hr)';
         adjustmentNote = 'Pagpatak ng 16:00, ibalik ang relo sa 15:00. Dagdag pwesto!';
       } else if (_selectedWatch == '0000 - 0400' && !_isSplit) {
         totalDuty = '5 Hours (Dagdag 1hr sa gabi)';
-        adjustmentNote = 'Pagpatak ng 02:00, ibalik sa 01:00. Mahabang gabi.';
+        adjustmentNote = 'Pagpatak ng 02:00, ibalik sa 01:00. Mahabang gabi sa gwardya.';
       } else {
-        adjustmentNote = 'Normal duty. Depende sa Night Orders kung saan isisingit ang +1hr.';
+        adjustmentNote = 'Normal duty. Tumingin sa Master\'s Night Orders kung aling watch ang magdadagdag ng +1 oras.';
       }
     }
 
@@ -117,110 +111,135 @@ class _WatchCalculatorScreenState extends State<WatchCalculatorScreen> {
         centerTitle: true,
         backgroundColor: Colors.blueGrey[900],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // 1. WATCH SELECTOR
-            const Text('Piliin ang Iyong Duty Watch:', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 8),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              decoration: BoxDecoration(
-                color: Colors.grey[900],
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: DropdownButtonHideUnderline(
-                child: DropdownButton<String>(
-                  value: _selectedWatch,
-                  isExpanded: true,
-                  dropdownColor: Colors.grey[900],
-                  items: _watches.map((w) => DropdownMenuItem(value: w, child: Text(w))).toList(),
-                  onChanged: (val) => setState(() => _selectedWatch = val!),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const Text('Piliin ang Iyong Duty Watch:', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 8),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                decoration: BoxDecoration(
+                  color: Colors.grey[900],
+                  borderRadius: BorderRadius.circular(8),
                 ),
-              ),
-            ),
-            const SizedBox(height: 20),
-
-            // 2. ADVANCE OR RETARD
-            const Text('Anong Klaseng Pagbabago?', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-            Row(
-              children: [
-                Expanded(
-                  child: RadioListTile<bool>(
-                    title: const Text('Advance (Sulong)'),
-                    value: true,
-                    groupValue: _isAdvance,
-                    onChanged: (val) => setState(() => _isAdvance = val!),
+                child: DropdownButtonHideUnderline(
+                  child: DropdownButton<String>(
+                    value: _selectedWatch,
+                    isExpanded: true,
+                    dropdownColor: Colors.grey[900],
+                    items: _watches.map((w) => DropdownMenuItem(value: w, child: Text(w))).toList(),
+                    onChanged: (val) => setState(() => _selectedWatch = val!),
                   ),
                 ),
-                Expanded(
-                  child: RadioListTile<bool>(
-                    title: const Text('Retard (Atras)'),
-                    value: false,
-                    groupValue: _isAdvance,
-                    onChanged: (val) => setState(() => _isAdvance = val!),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 10),
+              ),
+              const SizedBox(height: 16),
 
-            // 3. SPLIT OR STRAIGHT (Gagana lang kapag Advance para sa request mo)
-            if (_isAdvance) ...[
-              const Text('Paraan ng Pag-Advance:', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              const Text('Anong Klaseng Pagbabago?', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
               Row(
                 children: [
                   Expanded(
                     child: RadioListTile<bool>(
-                      title: const Text('3-Way Split (20m bawat isa)'),
+                      title: const Text('Advance', style: TextStyle(fontSize: 14)),
                       value: true,
-                      groupValue: _isSplit,
-                      onChanged: (val) => setState(() => _isSplit = val!),
+                      groupValue: _isAdvance,
+                      onChanged: (val) => setState(() => _isAdvance = val!),
                     ),
                   ),
                   Expanded(
                     child: RadioListTile<bool>(
-                      title: const Text('Straight 1 Hour'),
+                      title: const Text('Retard', style: TextStyle(fontSize: 14)),
                       value: false,
-                      groupValue: _isSplit,
-                      onChanged: (val) => setState(() => _isSplit = val!),
+                      groupValue: _isAdvance,
+                      onChanged: (val) => setState(() => _isAdvance = val!),
                     ),
                   ),
                 ],
               ),
-            ],
-            const Divider(height: 40, color: Colors.grey),
+              const SizedBox(height: 10),
 
-            // 4. RESULTS CARD
-            Expanded(
-              child: Card(
-                color: _isAdvance ? Colors.blueGrey[900] : Colors.brown[900],
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        _isAdvance ? '📈 CLOCK ADVANCE INFO' : '📉 CLOCK RETARD INFO',
-                        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.amber),
+              if (_isAdvance) ...[
+                const Text('Paraan ng Pag-Advance:', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                Row(
+                  children: [
+                    Expanded(
+                      child: RadioListTile<bool>(
+                        title: const Text('3-Way Split (20m)', style: TextStyle(fontSize: 13)),
+                        value: true,
+                        groupValue: _isSplit,
+                        onChanged: (val) => setState(() => _isSplit = val!),
                       ),
-                      const SizedBox(height: 20),
-                      _buildResultRow('Haba ng Duty mo:', results['duty']!),
-                      const SizedBox(height: 15),
-                      _buildResultRow('Akyat sa Bridge (15m early):', results['bridge']!, isHighlight: true),
-                      const SizedBox(height: 15),
-                      const Text('Gabay / Aksyon sa Oras:', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey)),
-                      const SizedBox(height: 5),
-                      Text(results['note']!, style: const TextStyle(fontSize: 15, height: 1.4)),
-                    ],
+                    ),
+                    Expanded(
+                      child: RadioListTile<bool>(
+                        title: const Text('Straight 1 Hr', style: TextStyle(fontSize: 13)),
+                        value: false,
+                        groupValue: _isSplit,
+                        onChanged: (val) => setState(() => _isSplit = val!),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+              const Divider(height: 30, color: Colors.grey),
+
+              Expanded(
+                child: Card(
+                  color: _isAdvance ? const Color(0xFF1B2A47) : const Color(0xFF3E2723),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          _isAdvance ? '📈 CLOCK ADVANCE INFO' : '📉 CLOCK RETARD INFO',
+                          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.amber),
+                        ),
+                        const SizedBox(height: 15),
+                        _buildResultRow('Haba ng Duty mo:', results['duty']!),
+                        const SizedBox(height: 15),
+                        _buildResultRow('Akyat sa Bridge (15m early):', results['bridge']!, isHighlight: true),
+                        const SizedBox(height: 15),
+                        const Text('Gabay / Aksyon sa Oras:', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey)),
+                        const SizedBox(height: 5),
+                        Text(results['note']!, style: const TextStyle(fontSize: 14, height: 1.4)),
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
-          ],
+              const SizedBox(height: 10),
+              
+              // DEVELOPER BADGE (IKAW ITO!)
+              Container(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                decoration: BoxDecoration(
+                  color: Colors.blueGrey.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.blueAccent.withOpacity(0.3)),
+                ),
+                child: const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.terminal, size: 16, color: Colors.blueAccent),
+                    SizedBox(width: 8),
+                    Text(
+                      'Developer: Renante Fullo',
+                      style: TextStyle(
+                        fontSize: 14, 
+                        fontWeight: FontWeight.bold, 
+                        color: Colors.white,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -230,7 +249,7 @@ class _WatchCalculatorScreenState extends State<WatchCalculatorScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: const TextStyle(color: Colors.grey, fontSize: 14)),
+        Text(label, style: const TextStyle(color: Colors.grey, fontSize: 13)),
         const SizedBox(height: 2),
         Text(
           value,
