@@ -18,15 +18,15 @@ dev_dependencies:
   flutter_lints: ^3.0.0
   flutter_launcher_icons: ^0.13.1
 
-# Configuration para sa automated icon generation (Isang beses lang dapat ito)
+# Configuration para sa automated icon generation
 flutter_launcher_icons:
   android: "launcher_icon"
-  ios: true
+  ios: false # PINALITAN: Ginawang false para hindi na maghanap ng iOS folders ang script
   image_path: "icon_apps.png"
   adaptive_icon_background: "#121b29"
   adaptive_icon_foreground: "icon_apps.png"
 
-# Flutter assets settings (Isang beses lang din ito)
+# Flutter assets settings
 flutter:
   uses-material-design: true
   assets:
