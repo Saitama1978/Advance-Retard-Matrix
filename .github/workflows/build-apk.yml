@@ -3,8 +3,8 @@ name: Build Android APK
 on:
   push:
     branches:
-      - main # Tatakbo ito tuwing mag-pupu-push ka sa main branch
-  workflow_dispatch: # Pwede mo rin itong i-click nang manual sa GitHub
+      - main
+  workflow_dispatch:
 
 jobs:
   build:
@@ -25,8 +25,16 @@ jobs:
         with:
           channel: 'stable'
 
+      # Heto ang solusyon: Gagawin nito ang kulang na android folders at build.gradle files
+      - name: Create Flutter Android Files
+        run: flutter create . --platforms=android
+
       - name: Install Dependencies
         run: flutter pub get
+
+      # Awtomatikong ikakabit ang icon_apps.png mo bilang app icon
+      - name: Generate App Icons
+        run: flutter pub run flutter_launcher_icons
 
       - name: Build APK
         run: flutter build apk --release
