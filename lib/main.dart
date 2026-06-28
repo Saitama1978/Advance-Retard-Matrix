@@ -10,6 +10,7 @@ class ShipWatchApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowColoredBoxes: false,
       debugShowCheckedModeBanner: false,
       title: 'Seaman Clock Adjuster',
       theme: ThemeData(
@@ -58,46 +59,59 @@ class _WatchCalculatorScreenState extends State<WatchCalculatorScreen> {
 
     if (_isAdvance) {
       if (_isSplit) {
-        // --- INAYOS NA LOGIC BASE SA PROTOCOL NG BARKO MO ---
         totalDuty = '3 Hours & 40 Minutes (Bawas 20m)';
-        
-        if (_selectedWatch == '2000 - 2400') {
-          // 8-12 Watch: Sila ang mag-aadvance sa 12 Midnight ng 1 hr base sa utos niyo.
-          bridgeTime = '19:45 (Normal akyat)';
-          adjustmentNote = 'Pagpatak ng 12 Midnight (2400), i-advance ang opisyal na oras ng barko ng 1 oras patungong 01:00.';
-        } else if (_selectedWatch == '0000 - 0400') {
-          // 12-4 Watch: 20 mins bago mag-quarter (23:45 - 20 mins = 23:25)
-          bridgeTime = '23:25 (20 mins Bago Mag-Quarter)';
+        if (_selectedWatch == '0000 - 0400') {
+          bridgeTime = '23:40 (20m Bago mag-Midnight)';
           adjustmentNote = 'Maagang akyat sa Bridge para sa transition ng split advance at 12 Midnight clock change.';
         } else if (_selectedWatch == '0400 - 0800') {
-          // 4-8 Watch: 20 mins bago mag-quarter (03:45 - 20 mins = 03:25)
-          bridgeTime = '03:25 (20 mins Bago Mag-Quarter)';
+          bridgeTime = '03:40 (20m Bago mag-04:00)';
           adjustmentNote = 'Maagang akyat sa Bridge dahil sa epekto ng split advance adjustment.';
+        } else if (_selectedWatch == '0800 - 1200') {
+          bridgeTime = '07:40 (20m Bago mag-08:00)';
+          adjustmentNote = 'Maagang akyat sa Bridge para sa huling bahagi ng 3-way split advance.';
+        } else if (_selectedWatch == '2000 - 2400') {
+          totalDuty = '4 Hours (Normal)';
+          bridgeTime = '19:45';
+          adjustmentNote = 'Pagpatak ng 12 Midnight (2400), i-advance ang opisyal na oras ng barko ng 1 oras patungong 01:00.';
         } else {
           totalDuty = '4 Hours (Normal)';
-          adjustmentNote = 'Normal duty. Walang bawas sa shift na ito (Ang 8-12, 12-4, at 4-8 lamang ang apektado ng 3-way split).';
+          adjustmentNote = 'Normal duty. Walang bawas sa shift na ito (00-04, 04-08, at 08-12 lamang ang apektado ng split).';
         }
       } else {
-        // Straight 1-Hour Advance
         if (_selectedWatch == '0000 - 0400') {
           totalDuty = '3 Hours (Patay-Oras / Bawas 1hr)';
           bridgeTime = '23:45';
-          adjustmentNote = 'Pagpatak ng 01:00, i-talon agad sa 02:00.';
-        } else if (_selectedWatch == '0400 - 0800') {
-          bridgeTime = '03:45';
-          adjustmentNote = 'Direktang akyat sa bagong takbo ng oras.';
+          adjustmentNote = 'Pagpatak ng 12 Midnight, i-talon agad ang oras ng barko patungong 01:00.';
         }
       }
     } else {
-      // Retard Logic
-      if (_selectedWatch == '1200 - 1600' && !_isSplit) {
-        totalDuty = '5 Hours (Buhay-Oras / Dagdag 1hr)';
-        adjustmentNote = 'Pagpatak ng 16:00, ibalik ang relo sa 15:00. Dagdag pwesto!';
-      } else if (_selectedWatch == '0000 - 0400' && !_isSplit) {
-        totalDuty = '5 Hours (Dagdag 1hr sa gabi)';
-        adjustmentNote = 'Pagpatak ng 02:00, ibalik sa 01:00. Mahabang gabi sa gwardya.';
+      // --- REVERSE LOGIC PARA SA RETARD (ATRAS-ORAS) ---
+      if (_isSplit) {
+        totalDuty = '4 Hours & 20 Minutes (Dagdag 20m)';
+        if (_selectedWatch == '0000 - 0400') {
+          bridgeTime = '00:05 (Inatras ng 20m)';
+          adjustmentNote = 'Buhay-oras! Extend ng 20 mins ang duty dahil pabaligtad (reverse) ang split adjustment ng gabi.';
+        } else if (_selectedWatch == '0400 - 0800') {
+          bridgeTime = '04:05 (Inatras ng 20m)';
+          adjustmentNote = 'Extend ng 20 mins ang duty. Umatras ang akyat para maging patas ang hatian ng oras.';
+        } else if (_selectedWatch == '0800 - 1200') {
+          bridgeTime = '08:05 (Inatras ng 20m)';
+          adjustmentNote = 'Huling bahagi ng 3-way split retard. Dagdag na 20 minutes sa gwardya.';
+        } else if (_selectedWatch == '2000 - 2400') {
+          totalDuty = '4 Hours (Normal)';
+          bridgeTime = '19:45';
+          adjustmentNote = 'Normal akyat. Pagpatak ng 2400/Midnight, ibalik ang opisyal na oras sa 23:00 base sa utos ng kapitan.';
+        } else {
+          totalDuty = '4 Hours (Normal)';
+          adjustmentNote = 'Normal duty. Walang dagdag sa shift na ito tuwing gabi.';
+        }
       } else {
-        adjustmentNote = 'Normal duty. Tumingin sa Master\'s Night Orders kung aling watch ang magdadagdag ng +1 oras.';
+        // Straight 1-Hour Retard
+        if (_selectedWatch == '0000 - 0400') {
+          totalDuty = '5 Hours (Buhay-Oras / Dagdag 1hr)';
+          bridgeTime = '23:45';
+          adjustmentNote = 'Pagpatak ng 02:00, ibalik ang relo sa 01:00. Mahabang gabi sa gwardya!';
+        }
       }
     }
 
@@ -167,29 +181,27 @@ class _WatchCalculatorScreenState extends State<WatchCalculatorScreen> {
               ),
               const SizedBox(height: 10),
 
-              if (_isAdvance) ...[
-                const Text('Paraan ng Pag-Advance:', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                Row(
-                  children: [
-                    Expanded(
-                      child: RadioListTile<bool>(
-                        title: const Text('3-Way Split (20m)', style: TextStyle(fontSize: 13)),
-                        value: true,
-                        groupValue: _isSplit,
-                        onChanged: (val) => setState(() => _isSplit = val!),
-                      ),
+              const Text('Paraan ng Pagbabago:', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              Row(
+                children: [
+                  Expanded(
+                    child: RadioListTile<bool>(
+                      title: const Text('3-Way Split (20m)', style: TextStyle(fontSize: 13)),
+                      value: true,
+                      groupValue: _isSplit,
+                      onChanged: (val) => setState(() => _isSplit = val!),
                     ),
-                    Expanded(
-                      child: RadioListTile<bool>(
-                        title: const Text('Straight 1 Hr', style: TextStyle(fontSize: 13)),
-                        value: false,
-                        groupValue: _isSplit,
-                        onChanged: (val) => setState(() => _isSplit = val!),
-                      ),
+                  ),
+                  Expanded(
+                    child: RadioListTile<bool>(
+                      title: const Text('Straight 1 Hr', style: TextStyle(fontSize: 13)),
+                      value: false,
+                      groupValue: _isSplit,
+                      onChanged: (val) => setState(() => _isSplit = val!),
                     ),
-                  ],
-                ),
-              ],
+                  ),
+                ],
+              ),
               const Divider(height: 30, color: Colors.grey),
 
               Expanded(
