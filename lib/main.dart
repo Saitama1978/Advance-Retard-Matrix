@@ -48,6 +48,7 @@ class _WatchCalculatorScreenState extends State<WatchCalculatorScreen> {
     String bridgeTime = '';
     String adjustmentNote = 'Walang pagbabago sa shift na ito.';
 
+    // Base bridge time (Standard 15 mins early rule / Quarter to)
     if (_selectedWatch == '0000 - 0400') bridgeTime = '23:45';
     if (_selectedWatch == '0400 - 0800') bridgeTime = '03:45';
     if (_selectedWatch == '0800 - 1200') bridgeTime = '07:45';
@@ -57,32 +58,38 @@ class _WatchCalculatorScreenState extends State<WatchCalculatorScreen> {
 
     if (_isAdvance) {
       if (_isSplit) {
+        // --- INAYOS NA LOGIC BASE SA PROTOCOL NG BARKO MO ---
         totalDuty = '3 Hours & 40 Minutes (Bawas 20m)';
         
         if (_selectedWatch == '2000 - 2400') {
+          // 8-12 Watch: Sila ang mag-aadvance sa 12 Midnight ng 1 hr base sa utos niyo.
           bridgeTime = '19:45 (Normal akyat)';
-          adjustmentNote = 'Pagpatak ng 23:00, i-advance ang relo sa 23:20.';
+          adjustmentNote = 'Pagpatak ng 12 Midnight (2400), i-advance ang opisyal na oras ng barko ng 1 oras patungong 01:00.';
         } else if (_selectedWatch == '0000 - 0400') {
-          bridgeTime = '23:45 (Bagong Oras)';
-          adjustmentNote = 'Pagpatak ng 02:00, i-advance ang relo sa 02:20.';
+          // 12-4 Watch: 20 mins bago mag-quarter (23:45 - 20 mins = 23:25)
+          bridgeTime = '23:25 (20 mins Bago Mag-Quarter)';
+          adjustmentNote = 'Maagang akyat sa Bridge para sa transition ng split advance at 12 Midnight clock change.';
         } else if (_selectedWatch == '0400 - 0800') {
-          bridgeTime = '03:45 (Bagong Oras - Maaga Gising!)';
-          adjustmentNote = 'Pagpatak ng 06:00, i-advance ang relo sa 06:20.';
+          // 4-8 Watch: 20 mins bago mag-quarter (03:45 - 20 mins = 03:25)
+          bridgeTime = '03:25 (20 mins Bago Mag-Quarter)';
+          adjustmentNote = 'Maagang akyat sa Bridge dahil sa epekto ng split advance adjustment.';
         } else {
           totalDuty = '4 Hours (Normal)';
-          adjustmentNote = 'Walang bawas sa shift na ito. Ibang watch o day-workers ang apektado.';
+          adjustmentNote = 'Normal duty. Walang bawas sa shift na ito (Ang 8-12, 12-4, at 4-8 lamang ang apektado ng 3-way split).';
         }
       } else {
+        // Straight 1-Hour Advance
         if (_selectedWatch == '0000 - 0400') {
           totalDuty = '3 Hours (Patay-Oras / Bawas 1hr)';
-          bridgeTime = '23:45 (Normal akyat)';
+          bridgeTime = '23:45';
           adjustmentNote = 'Pagpatak ng 01:00, i-talon agad sa 02:00.';
         } else if (_selectedWatch == '0400 - 0800') {
-          bridgeTime = '03:45 (Bagong Oras - Puyat!)';
-          adjustmentNote = 'Direktang akyat sa bagong takbo ng oras dahil kulang ang tulog.';
+          bridgeTime = '03:45';
+          adjustmentNote = 'Direktang akyat sa bagong takbo ng oras.';
         }
       }
     } else {
+      // Retard Logic
       if (_selectedWatch == '1200 - 1600' && !_isSplit) {
         totalDuty = '5 Hours (Buhay-Oras / Dagdag 1hr)';
         adjustmentNote = 'Pagpatak ng 16:00, ibalik ang relo sa 15:00. Dagdag pwesto!';
@@ -201,7 +208,7 @@ class _WatchCalculatorScreenState extends State<WatchCalculatorScreen> {
                         const SizedBox(height: 15),
                         _buildResultRow('Haba ng Duty mo:', results['duty']!),
                         const SizedBox(height: 15),
-                        _buildResultRow('Akyat sa Bridge (15m early):', results['bridge']!, isHighlight: true),
+                        _buildResultRow('Akyat sa Bridge:', results['bridge']!, isHighlight: true),
                         const SizedBox(height: 15),
                         const Text('Gabay / Aksyon sa Oras:', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey)),
                         const SizedBox(height: 5),
@@ -213,7 +220,7 @@ class _WatchCalculatorScreenState extends State<WatchCalculatorScreen> {
               ),
               const SizedBox(height: 10),
               
-              // DEVELOPER BADGE (IKAW ITO!)
+              // DEVELOPER BADGE
               Container(
                 padding: const EdgeInsets.symmetric(vertical: 8),
                 decoration: BoxDecoration(
