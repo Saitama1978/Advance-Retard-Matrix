@@ -75,7 +75,7 @@ class _WatchCalculatorScreenState extends State<WatchCalculatorScreen> {
       if (_isSplit) {
         if (_selectedWatch == '0000 - 0400') {
           totalDuty = '4 Hours & 20 Minutes (Dagdag 20m)';
-          bridgeTime = '00:20 (New Time)';
+          bridgeTime = '00:20 (Old Time)';
           adjustmentNote = 'Umatras ang oras pagpatak ng midnight kaya ang akyat mo ay magiging 00:20 na sa Bagong Oras. Bababa ka sa bridge ng 04:40.';
         } else if (_selectedWatch == '0400 - 0800') {
           totalDuty = '4 Hours & 20 Minutes (Dagdag 20m)';
