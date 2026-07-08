@@ -34,7 +34,6 @@ class _WatchCalculatorScreenState extends State<WatchCalculatorScreen> {
   bool _isAdvance = true; 
   bool _isSplit = true;   
 
-  // Nililitaaw lang ang mga watches na sakop ng midnight adjustment at ang turnover sa umaga
   final List<String> _watches = [
     '2000 - 2400',
     '0000 - 0400',
@@ -52,7 +51,7 @@ class _WatchCalculatorScreenState extends State<WatchCalculatorScreen> {
         if (_selectedWatch == '2000 - 2400') {
           totalDuty = '3 Hours & 40 Minutes (Bawas 20m)';
           bridgeTime = '19:45';
-          adjustmentNote = 'Bawas ang shift mo ng 20m. Bababa ka ng maaga sa bridge ng 23:40 dahil aakyat na ang 12-4 watch para saluhin ang split advance.';
+          adjustmentNote = 'Duty mo sa gabi ay hanggang 23:40 lamang dahil aakyat na ang 12-4 watch para saluhin ang split advance. Babawi ka ng duty sa shift mo bukas ng umaga.';
         } else if (_selectedWatch == '0000 - 0400') {
           totalDuty = '3 Hours & 40 Minutes (Bawas 20m)';
           bridgeTime = '23:40 (Old Time)';
@@ -60,11 +59,11 @@ class _WatchCalculatorScreenState extends State<WatchCalculatorScreen> {
         } else if (_selectedWatch == '0400 - 0800') {
           totalDuty = '3 Hours & 40 Minutes (Bawas 20m)';
           bridgeTime = '04:20 (New Time)';
-          adjustmentNote = 'Aakyat ng 04:20 sa Bagong Oras pagkatapos ka irelieve ng 12-4. Bababa ka ng eksaktong 08:00 para sakto sa susunod na duty.';
+          adjustmentNote = 'Aakyat ng 04:20 sa Bagong Oras. Bababa ka ng eksaktong 08:00.';
         } else if (_selectedWatch == '0800 - 1200') {
-          totalDuty = '4 Hours (Normal)';
-          bridgeTime = '07:45';
-          adjustmentNote = 'Back to normal duty. Eksaktong 07:45 ang akyat mo para i-relieve ang 4-8 watch na bababa ng 08:00.';
+          totalDuty = '4 Hours & 20 Minutes (Bawi ng 20m mula kagabi)';
+          bridgeTime = '07:20 (New Time)';
+          adjustmentNote = 'Oras ng pagbawi! Dahil nabawasan ka ng 20m kagabi (23:40 baba), aakyat ka ngayon ng mas maaga ng 07:20 para mabuo ang hatian.';
         }
       } else {
         // Straight 1-Hour Advance
@@ -72,7 +71,7 @@ class _WatchCalculatorScreenState extends State<WatchCalculatorScreen> {
         bridgeTime = _getNormalAkyatTime(_selectedWatch);
         adjustmentNote = _selectedWatch == '0000 - 0400' 
             ? 'Pagpatak ng 12 Midnight (2400), i-talon agad ang opisyal na oras ng barko patungong 01:00.'
-            : 'Normal duty sa ilalim ng bagong takbo ng oras ng barko.';
+            : 'Normal duty sa ilalim ng bagong takbo ng oras.';
       }
     } else {
       // --- REVERSE LOGIC PARA SA RETARD (ATRAS-ORAS) ---
@@ -80,27 +79,27 @@ class _WatchCalculatorScreenState extends State<WatchCalculatorScreen> {
         if (_selectedWatch == '2000 - 2400') {
           totalDuty = '4 Hours & 20 Minutes (Dagdag 20m)';
           bridgeTime = '19:45';
-          adjustmentNote = 'Mag-eextend ang duty mo sa gabi hanggang 00:20 (Bagong Oras) para makuha ang dagdag na 20 minutes bago ka i-relieve ng 12-4.';
+          adjustmentNote = 'Mag-eextend ang duty mo sa gabi hanggang 00:20 (Bagong Oras) para makuha ang dagdag na 20 minutes bago i-relieve ng 12-4. Babawasan ang shift mo sa umaga.';
         } else if (_selectedWatch == '0000 - 0400') {
           totalDuty = '4 Hours & 20 Minutes (Dagdag 20m)';
           bridgeTime = '00:20 (New Time)';
-          adjustmentNote = 'Umatras ang akyat mo sa 00:20 dahil nag-extend ang naunang watch. Bababa ka sa bridge ng 04:40.';
+          adjustmentNote = 'Umatras ang akyat mo sa 00:20 dahil sa dagdag-oras ng naunang watch. Bababa ka sa bridge ng 04:40.';
         } else if (_selectedWatch == '0400 - 0800') {
           totalDuty = '4 Hours & 20 Minutes (Dagdag 20m)';
           bridgeTime = '04:40 (New Time)';
-          adjustmentNote = 'Umatras ang akyat mo sa 04:40. Bababa ka sa bridge ng 09:00 sa Bagong Oras para makumpleto ang dagdag na oras.';
+          adjustmentNote = 'Umatras ang akyat mo sa 04:40. Bababa ka sa bridge ng 09:00 sa Bagong Oras.';
         } else if (_selectedWatch == '0800 - 1200') {
-          totalDuty = '4 Hours (Normal)';
-          bridgeTime = '08:45'; // Naurong ang akyat dahil sa dulo ng retard ng 4-8 watch
-          adjustmentNote = 'Back to normal duty length. Aakyat ng 08:45 para irelieve ang 4-8 watch na bababa ng 09:00 sa bagong takbo ng oras.';
+          totalDuty = '3 Hours & 40 Minutes (Bawas 20m mula kagabi)';
+          bridgeTime = '08:20 (New Time)';
+          adjustmentNote = 'Dahil sumobra ka ng 20m kagabi sa gwardya, huli na ang akyat mo ngayon. Eksaktong 08:20 ka aakyat para bawas-duty.';
         }
       } else {
         // Straight 1-Hour Retard
         totalDuty = _selectedWatch == '0000 - 0400' ? '5 Hours (Dagdag 1hr)' : '4 Hours (Normal)';
         bridgeTime = _getNormalAkyatTime(_selectedWatch);
         adjustmentNote = _selectedWatch == '0000 - 0400'
-            ? 'Pagpatak ng Midnight, i-retard ang oras. Dagdag 1 oras sa gwardya.'
-            : 'Normal duty sa ilalim ng inatras na oras ng barko.';
+            ? 'Pagpatak ng Midnight, i-retard ang oras ng barko. Dagdag 1 oras sa gwardya.'
+            : 'Normal duty sa ilalim ng inatras na oras.';
       }
     }
 
