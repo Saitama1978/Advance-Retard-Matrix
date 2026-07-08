@@ -30,17 +30,16 @@ class WatchCalculatorScreen extends StatefulWidget {
 }
 
 class _WatchCalculatorScreenState extends State<WatchCalculatorScreen> {
-  String _selectedWatch = '0000 - 0400';
+  // Ginawang default ang 2000 - 2400 para tugma sa simula ng night adjustments
+  String _selectedWatch = '2000 - 2400';
   bool _isAdvance = true; 
   bool _isSplit = true;   
 
+  // Tinanggal ang mga day shifts (8-12, 12-16, 16-20)
   final List<String> _watches = [
+    '2000 - 2400',
     '0000 - 0400',
     '0400 - 0800',
-    '0800 - 1200',
-    '1200 - 1600',
-    '1600 - 2000',
-    '2000 - 2400',
   ];
 
   Map<String, String> _calculateSchedule() {
@@ -50,7 +49,6 @@ class _WatchCalculatorScreenState extends State<WatchCalculatorScreen> {
 
     if (_isAdvance) {
       if (_isSplit) {
-        // --- FIXED SAKTONG LOGIC BASE SA PROTOCOL NG BARKO MO ---
         if (_selectedWatch == '0000 - 0400') {
           totalDuty = '3 Hours & 40 Minutes (Bawas 20m)';
           bridgeTime = '23:40 (Old Time)';
@@ -63,10 +61,6 @@ class _WatchCalculatorScreenState extends State<WatchCalculatorScreen> {
           totalDuty = '3 Hours & 40 Minutes (Bawas 20m)';
           bridgeTime = '19:45 (Normal)';
           adjustmentNote = 'Duty mo ay hanggang 23:40 lamang dahil aakyat na ang 12-4 watch para saluhin ang split advance.';
-        } else {
-          totalDuty = '4 Hours (Normal)';
-          bridgeTime = _getNormalAkyatTime(_selectedWatch);
-          adjustmentNote = 'Normal duty. Walang bawas sa shift na ito. Ang gabi (8-12, 12-4, at 4-8) lamang ang kasama sa 3-way split.';
         }
       } else {
         // Straight 1-Hour Advance
@@ -90,11 +84,7 @@ class _WatchCalculatorScreenState extends State<WatchCalculatorScreen> {
         } else if (_selectedWatch == '0400 - 0800') {
           totalDuty = '4 Hours & 20 Minutes (Dagdag 20m)';
           bridgeTime = '04:40 (New Time)';
-          adjustmentNote = 'Umatras ang akyat mo sa 04:40. Bababa ka ng eksaktong 09:00? O kaya naman ay aadjust din ang dulo para maging patas.';
-        } else {
-          totalDuty = '4 Hours (Normal)';
-          bridgeTime = _getNormalAkyatTime(_selectedWatch);
-          adjustmentNote = 'Normal duty. Tingnan ang Master Night Orders para sa eksaktong hatian ng Retard.';
+          adjustmentNote = 'Umatras ang akyat mo sa 04:40. Bababa ka ng eksaktong 08:00 para balik normal ang daytime watches.';
         }
       } else {
         // Straight 1-Hour Retard
@@ -114,12 +104,9 @@ class _WatchCalculatorScreenState extends State<WatchCalculatorScreen> {
   }
 
   String _getNormalAkyatTime(String watch) {
+    if (watch == '2000 - 2400') return '19:45';
     if (watch == '0000 - 0400') return '23:45';
     if (watch == '0400 - 0800') return '03:45';
-    if (watch == '0800 - 1200') return '07:45';
-    if (watch == '1200 - 1600') return '11:45';
-    if (watch == '1600 - 2000') return '15:45';
-    if (watch == '2000 - 2400') return '19:45';
     return '';
   }
 
